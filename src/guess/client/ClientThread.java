@@ -23,20 +23,20 @@ public class ClientThread implements Runnable  {
     private static final int DEFAULT_START = 1;
     private static final int DEFAULT_END = 10;
     
-    private InputStream servidor;
+    private InputStream server;
     private OutputStream client;
     int id;
 
-    public ClientThread(int id, InputStream servidor, OutputStream client) {
+    public ClientThread(int id, InputStream server, OutputStream client) {
         this.id = id;
-        this.servidor = servidor;
+        this.server = server;
         this.client = client;
     }
 
     @Override
     public void run() {
         try (ObjectOutputStream oos = new ObjectOutputStream(client);
-                ObjectInputStream ois = new ObjectInputStream(servidor)) {
+                ObjectInputStream ois = new ObjectInputStream(server)) {
             boolean stopTrying = false;
             Client clientGuess = new Client(this.id, DEFAULT_START, DEFAULT_END);
             do {

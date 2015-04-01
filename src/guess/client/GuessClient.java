@@ -24,16 +24,16 @@ public class GuessClient {
     }
    
     private String host;
-    private int porta;
+    private int port;
    
-    public GuessClient (String host, int porta) {
+    public GuessClient (String host, int port) {
         this.host = host;
-        this.porta = porta;
+        this.port = port;
     }
    
     public void execute() throws UnknownHostException, IOException {
         for(int i=1; i<=3 ;i++) {
-            Socket cliente = new Socket(this.host, this.porta);
+            Socket cliente = new Socket(this.host, this.port);
             System.out.println("Client "+ i +" connected to server!");
 
             ClientThread r = new ClientThread(i, cliente.getInputStream(), cliente.getOutputStream());
