@@ -5,6 +5,7 @@
  */
 package guess.client;
 
+import guess.client.dto.Guess;
 import guess.server.Tip;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,11 +27,13 @@ public class ClientThread implements Runnable  {
     private InputStream server;
     private OutputStream client;
     int id;
+    private Randomizer randomizer;
 
     public ClientThread(int id, InputStream server, OutputStream client) {
         this.id = id;
         this.server = server;
         this.client = client;
+        this.randomizer = new Randomizer(this.id, DEFAULT_START, DEFAULT_END);
     }
 
     @Override
@@ -38,18 +41,15 @@ public class ClientThread implements Runnable  {
         try (ObjectOutputStream oos = new ObjectOutputStream(client);
                 ObjectInputStream ois = new ObjectInputStream(server)) {
             boolean stopTrying = false;
-            Client clientGuess = new Client(this.id, DEFAULT_START, DEFAULT_END);
             do {
-                oos.writeObject(clientGuess);
-                Object serverResponse = ois.readObject();
-                if(serverResponse instanceof String && ((String) serverResponse).equals("exit")) {
+                oos.writeObject(randomizer.getGuess());
+                Tip serverResponse = (Tip) ois.readObject();
+                if(serverResponse == Tip.OVER || serverResponse == Tip.WIN) {
                     System.out.println("Closing client " + id);
                     return;
                 }
-                if(serverResponse instanceof Tip) {
-                    clientGuess = new Client(this.id, clientGuess.getStart(), clientGuess.getEnd(), (Tip) serverResponse);
-                }
-                oos.flush();
+                randomizer.randomize(serverResponse);
+                oos.reset();
             } while (!stopTrying);
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
