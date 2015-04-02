@@ -31,7 +31,7 @@ public class Randomizer {
         this.guess.setGuessNumber(guessNumber);
     }
     
-    public synchronized void randomize (Tip tip) {
+    public void randomize (Tip tip) {
         this.start = tip == Tip.BIGGER ? this.guessNumber : this.start;
         this.end = tip == Tip.LESSER ? this.guessNumber :  this.end;
         this.guessNumber = generateRandomInteger(this.start, this.end, new Random());
